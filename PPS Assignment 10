@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+int is_leap(int y)
+{
+    return (y % 400 == 0) || (y % 4 == 0 && y % 100 != 0);
+}
+
+int start_day(int y)
+{
+    int d = (y - 1) * 365 + (y - 1) / 4 - (y - 1) / 100 + (y - 1) / 400;
+    return (d + 1) % 7; /* 0 = Sun, 1 = Mon, ... 6 = Sat */
+}
+
+int main(void)
+{
+    int year, day;
+    const char *months[] = {"Jan", "Feb", "Mar", "April",
+                            "May", "June", "July", "Aug", "Sept", "Oct", "Nov",
+                            "Dec"};
+    int mdays[] = {31, 28, 31, 30, 31, 30, 31, 31,
+                   30, 31, 30, 31};
+
+    printf("Enter year :");
+    scanf("%d", &year);
+
+    if (is_leap(year)) mdays[1] = 29;
+    day = start_day(year);
+
+    for (int m = 0; m < 12; m++)
+    {
+        printf("\n\n--- %s %d ---\n Sun Mon Tue Wed Thu Fri Sat\n", months[m], year);
+        for (int s = 0; s < day; s++) printf("    ");
+        for (int d = 1; d <= mdays[m]; d++)
+        {
+            printf("%4d", d);
+            if (++day > 6)
+            {
+                printf("\n");
+                day = 0;
+            }
+        }
+    }
+
+    return 0;
+}
