@@ -1,0 +1,51 @@
+#include <stdio.h>
+
+typedef struct
+{
+    int zone;
+    float moisture, temp, humidity;
+    char health;
+    double lat, lon;
+} Data;
+
+int main()
+{
+    int n;
+    Data d;
+    FILE *fp = fopen("data.dat", "wb");
+
+    printf("Enter number of readings :");
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++)
+    {
+        printf("Zone moisture Temp humidity health(G/F/P) Lat Lon:");
+        scanf("%d %f %f %f %c %lf %lf",
+              &d.zone, &d.moisture, &d.temp, &d.humidity,
+              &d.health, &d.lat, &d.lon);
+        fwrite(&d, sizeof(Data), 1, fp);
+    }
+    fclose(fp);
+
+    fp = fopen("data.dat", "rb");
+    FILE *rp = fopen("report.txt", "w");
+    printf("\n--- Report ---\n");
+    fprintf(rp, "--- Report ---\n");
+
+    while (fread(&d, sizeof(Data), 1, fp) == 1)
+    {
+        int irrigate = (d.moisture < 35.0f || d.health == 'P' ||
+                        d.health == 'p');
+        printf("Zone %d (%.4lf, %.4lf) M:%.1f%% T:%.1fC H:%.1f%% -> %s\n",
+               d.zone, d.lat, d.lon, d.moisture, d.temp,
+               d.humidity, irrigate ? "IRRIGATE" : "OK");
+
+        fprintf(rp, "Zone %d (%.4lf, %.4lf) M:%.1f%% T:%.1fC H:%.1f%% -> %s\n",
+                d.zone, d.lat, d.lon, d.moisture, d.temp,
+                d.humidity, irrigate ? "IRRIGATE" : "OK");
+    }
+
+    fclose(fp);
+    fclose(rp);
+    return 0;
+}
