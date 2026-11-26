@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <string.h>
+
+struct device
+{
+    int id;
+    int type;
+    float Vf, Ir, Vr;
+    float maxVf, maxIr, minVr;
+    char status[10];
+};
+
+int main()
+{
+    struct device d[100];
+    int n, i, choice;
+    int failedcount = 0;
+
+    printf("Enter number of devices :");
+    scanf("%d", &n);
+    if (n < 1 || n > 100)
+    {
+        printf("Invalid number of devices.\n");
+        return 0;
+    }
+
+    for (i = 0; i < n; i++)
+    {
+        printf("\nEnter details of device %d\n", i + 1);
+        printf("Enter device ID:");
+        scanf("%d", &d[i].id);
+        printf("Select device Type :\n");
+        printf("1. Diode\n");
+        printf("2. BJT\n");
+        printf("3. MOSFET\n");
+        printf("4. LED\n");
+        printf("Enter choice : ");
+        scanf("%d", &choice);
+        if (choice < 1 || choice > 4)
+        {
+            printf("Invalid device type.\n");
+            return 0;
+        }
+        d[i].type = choice;
+
+        printf("Enter Forward voltage (Vf):");
+        scanf("%f", &d[i].Vf);
+        printf("Enter Reverse leakage current (Ir):");
+        scanf("%f", &d[i].Ir);
+        printf("Enter Rated voltage (Vr):");
+        scanf("%f", &d[i].Vr);
+        printf("Enter maximum allowed Vf :");
+        scanf("%f", &d[i].maxVf);
+        printf("Enter maximum allowed Ir :");
+        scanf("%f", &d[i].maxIr);
+        printf("Enter minimum required Vr :");
+        scanf("%f", &d[i].minVr);
+
+        if (d[i].Vf <= d[i].maxVf &&
+            d[i].Ir <= d[i].maxIr &&
+            d[i].Vr >= d[i].minVr)
+        {
+            sprintf(d[i].status, "Pass");
+        }
+        else
+        {
+            sprintf(d[i].status, "Fail");
+            failedcount++;
+        }
+    }
+
+    printf("\n===== Device Report =====\n");
+    for (i = 0; i < n; i++)
+    {
+        printf("\nDevice ID: %d\n", d[i].id);
+        printf("Device Type:");
+        switch (d[i].type)
+        {
+            case 1:
+                printf("Diode\n");
+                break;
+            case 2:
+                printf("BJT\n");
+                break;
+            case 3:
+                printf("MOSFET\n");
+                break;
+            case 4:
+                printf("LED\n");
+                break;
+        }
+        printf("Forward Voltage : %.2f\n", d[i].Vf);
+        printf("Reverse leakage current : %.2f\n", d[i].Ir);
+        printf("Rated voltage : %.2f\n", d[i].Vr);
+        printf("Status : %s\n", d[i].status);
+
+        if (d[i].status[0] == 'F')
+        {
+            printf("Result : Out of specification\n");
+        }
+    }
+
+    printf("\nTotal Devices : %d\n", n);
+    printf("Failed Devices : %d\n", failedcount);
+
+    if (failedcount > 0)
+    {
+        printf("Failed Device IDs : ");
+        for (i = 0; i < n; i++)
+        {
+            if (d[i].status[0] == 'F')
+            {
+                printf("%d ", d[i].id);
+            }
+        }
+        printf("\n");
+    }
+    return 0;
+}
